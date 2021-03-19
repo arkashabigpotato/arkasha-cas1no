@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<title> Index </title>
+
+{% if name == "Artem1" %}
+    <h1> {{name}} </h1>
+
+{% else %}
+    <h1> Hello </h1>
+
+{% endif %}
+
+<a href="{{ url_for('logout') }}">Logout</a>
+<a href="{{ url_for('login') }}">Login</a>
+
