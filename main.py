@@ -31,9 +31,19 @@ def login():
             return render_template("login.html")
 
 
-@app.route("/registration")
+@app.route("/registration", methods=["GET", "POST"])
 def register():
-    return "Register page"
+    if request.method == "POST":
+        if request.form['password'] == request.form['2_password']:
+            session['login'] = request.form['login']
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('register'))
+    else:
+        if session.get('login'):
+            return redirect(url_for('index'))
+        else:
+            return render_template("registration.html")
 
 
 @app.route("/logout")
