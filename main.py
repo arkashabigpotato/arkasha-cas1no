@@ -1,7 +1,6 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import abort
 from flask import session
 from flask import url_for
 from flask import redirect
@@ -15,8 +14,7 @@ app.secret_key = "ljy4x^isv^@axcd&z&d-o1d)uu+_!%5atd=fx)6c$c#3x9=_)w"
 @app.route("/index")
 @app.route("/")
 def index():
-    name = "Artem"
-    return render_template("index.html", name=name)
+    return render_template("index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -39,7 +37,7 @@ def register():
             return redirect(url_for('index'))
         else:
             return redirect(url_for('register'))
-    else:
+    else:  # GET
         if session.get('login'):
             return redirect(url_for('index'))
         else:
@@ -59,4 +57,3 @@ def user(user_id):
 
 if __name__ == "__main__":
     app.run()
-
