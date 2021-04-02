@@ -4,11 +4,25 @@ from flask import request
 from flask import session
 from flask import url_for
 from flask import redirect
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///casino.db'
 app.debug = True
 app.secret_key = "ljy4x^isv^@axcd&z&d-o1d)uu+_!%5atd=fx)6c$c#3x9=_)w"
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    balance = db.Column(db.Float, default=1000)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_blocked = db.Column(db.Boolean, default=False)
+    date_of_birth = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 @app.route("/index")
@@ -20,10 +34,22 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        session['login'] = request.form['login']
-        return redirect(url_for("index"))
+        email = request.form['email']
+        password = request.form['password']
+
+        logged_user = User.query.filter_by(email=email).first()
+
+        if logged_user:
+            if password == logged_user.password:
+                session['email'] = request.form['email']
+                return redirect(url_for("index"))
+            else:
+                return redirect(url_for("login"))
+        else:
+            return redirect(url_for('register'))
+
     else:  # GET
-        if session.get('login'):
+        if session.get('email'):
             return redirect(url_for('index'))
         else:
             return render_template("login.html")
@@ -33,12 +59,22 @@ def login():
 def register():
     if request.method == "POST":
         if request.form['password'] == request.form['2_password']:
-            session['login'] = request.form['login']
+            email = request.form['email']
+            password = request.form['password']
+
+            new_user = User(email=email, password=password)
+
+            try:
+                db.session.add(new_user)
+                db.session.commit()
+            except:
+                return "registration error"
+                session['email'] = request.form['email']
             return redirect(url_for('index'))
         else:
             return redirect(url_for('register'))
     else:  # GET
-        if session.get('login'):
+        if session.get('email'):
             return redirect(url_for('index'))
         else:
             return render_template("registration.html")
@@ -46,7 +82,7 @@ def register():
 
 @app.route("/logout")
 def logout():
-    session.pop('login', None)
+    session.pop('email', None)
     return redirect(url_for('index'))
 
 

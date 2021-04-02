@@ -1,15 +1,11 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-<title> Index </title>
+{% block title %}
+    <title> Index </title>
+{% endblock %}
 
-{% if name == "Artem1" %}
-    <h1> {{name}} </h1>
-
-{% else %}
-    <h1> Hello </h1>
-
-{% endif %}
-
-<a href="{{ url_for('logout') }}">Logout</a>
-<a href="{{ url_for('login') }}">Login</a>
-<a href="{{ url_for('register') }}">Register</a>
+{% block body %}
+    <a href="{{ url_for('login') }}"><button class="btn btn-info">Login</button></a>
+    <a href="{{ url_for('register') }}"><button class="btn btn-info">Register</button></a>
+    <a href="{{ url_for('logout') }}"><button class="btn btn-info">Logout</button></a>
+{% endblock %}

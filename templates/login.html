@@ -1,11 +1,21 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-<title>Login</title>
+{% block title %}
+    <title> Login </title>
+{% endblock %}
+
+{% block body %}
 
 <form action="" method="post">
-    <p><input name="login" type="text"> </p>
-    <p><input name="password" type="password"> </p>
-    <p><input type="submit"> </p>
+    <div class="row justify-content-center">
+        <div class="col-3 mx-auto">
+            <h4 style="color: #fff;">Login</h4>
+            <p><input name="email" type="text" class="form-control" placeholder="Email"> </p>
+            <p><input name="password" type="password" class="form-control" placeholder="Password"> </p>
+            <p><input type="submit" class="btn btn-info"> </p>
+        </div>
+    </div>
 
 </form>
 
+{% endblock %}
