@@ -6,6 +6,7 @@ from flask import url_for
 from flask import redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import hashlib
 
 
 app = Flask(__name__)
@@ -49,9 +50,6 @@ class Game(db.Model):
     user = db.relationship('User', backref='game', uselist=False)
 
 
-db.create_all()
-
-
 @app.route("/index")
 @app.route("/")
 def index():
@@ -67,7 +65,7 @@ def login():
         logged_user = User.query.filter_by(email=email).first()
 
         if logged_user:
-            if password == logged_user.password:
+            if hashlib.sha1(password.encode()).hexdigest() == logged_user.password:
                 session['email'] = request.form['email']
                 return redirect(url_for("index"))
             else:
@@ -89,14 +87,14 @@ def register():
             email = request.form['email']
             password = request.form['password']
 
-            new_user = User(email=email, password=password)
+            new_user = User(email=email, password=hashlib.sha1(password.encode()).hexdigest())
 
             try:
                 db.session.add(new_user)
                 db.session.commit()
             except:
-                return "registration error"
                 session['email'] = request.form['email']
+                return "registration error"
             return redirect(url_for('index'))
         else:
             return redirect(url_for('register'))
@@ -116,6 +114,25 @@ def logout():
 @app.route("/user/<user_id>")
 def user(user_id):
     return "user id -" + str(user_id)
+
+
+@app.route("/admin/")
+def admin():
+    return render_template("admin.html")
+
+
+@app.route("/admin/users")
+def admin_users():
+    users = User.query.all()
+    return render_template("admin_users.html", users=users)
+
+
+@app.route("/admin/slots")
+def admin_slots():
+    return 'admin slots'
+
+
+
 
 
 if __name__ == "__main__":
