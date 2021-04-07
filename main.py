@@ -10,12 +10,14 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///casino.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.debug = True
 app.secret_key = "ljy4x^isv^@axcd&z&d-o1d)uu+_!%5atd=fx)6c$c#3x9=_)w"
 db = SQLAlchemy(app)
 
 
 class User(db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -23,6 +25,31 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_blocked = db.Column(db.Boolean, default=False)
     date_of_birth = db.Column(db.DateTime, default=datetime.utcnow)
+    user_games = db.Column(db.Integer, db.ForeignKey('game.id'))
+
+
+class Slot(db.Model):
+    __tablename__ = "slot"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    win_rate = db.Column(db.Float, default=0.25)
+    is_active = db.Column(db.Boolean, default=True)
+    slot_games = db.Column(db.Integer, db.ForeignKey('game.id'))
+
+
+class Game(db.Model):
+    __tablename__ = "game"
+    id = db.Column(db.Integer, primary_key=True)
+    datetime = db.Column(db.DateTime, default=datetime.utcnow)
+    slot = db.relationship('Slot', backref='game', uselist=False)
+    bid = db.Column(db.Float, nullable=False)
+    is_win = db.Column(db.Boolean, nullable=False)
+    payoff = db.Column(db.Float, nullable=False)
+    user = db.relationship('User', backref='game', uselist=False)
+
+
+db.create_all()
 
 
 @app.route("/index")
