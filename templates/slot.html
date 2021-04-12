@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title> Slot №{{ slot_id }}</title>
+{% endblock %}
+
+{% block body %}
+    <style>h3{color: antiquewhite}</style>
+
+    <h3>Your balance is {{ balance }} rubles</h3>
+
+    {% if is_win != None %}
+        <h3>Your number is {{ number }}</h3>
+
+        {% if is_win %}
+            <h3>You are win!</h3>
+        {% else %}
+            <h3>You are loss!</h3>
+        {% endif %}
+
+    {% endif %}
+
+    <form method="post">
+        <input type="text" name="data" value="more" hidden>
+        <button class="btn btn-info" type="submit">More</button>
+    </form>
+    <br>
+    <form method="post">
+        <input type="text" name="data" value="less" hidden>
+        <button class="btn btn-info" type="submit">Less</button>
+    </form>
+{% endblock %}

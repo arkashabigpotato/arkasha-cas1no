@@ -7,6 +7,7 @@ from flask import redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import hashlib
+import random
 
 
 app = Flask(__name__)
@@ -138,15 +139,41 @@ def slots():
     return render_template("slots.html", slots=slots)
 
 
-@app.route("/slot/<slot_id>")
+@app.route("/slot/<slot_id>", methods=["POST", "GET"])
 def slot(slot_id):
-    new_slot = Slot(name="Asino 777", type=1)
-    try:
-        db.session.add(new_slot)
-        db.session.commit()
-        return 'ok'
-    except:
-        return "Error"
+    if session.get('email'):
+
+        user_data = User.query.filter_by(email=session.get('email')).first()
+
+
+        if request.method == "GET":
+            return render_template("slot.html", slot_id=slot_id, is_win=None, number=None, balance=user_data.balance)
+        else:
+            data = request.form['data']
+            is_win = True
+            number = random.randint(0, 100)
+
+            if data == 'less' and number < 40:
+                is_win = True
+            elif data == 'less' and number > 40:
+                is_win = False
+            elif data == 'more' and number < 40:
+                is_win = False
+            else:
+                is_win = True
+
+            if is_win:
+                User.query.filter_by(email=session.get('email')).update({'balance': user_data.balance + 4})
+            else:
+                User.query.filter_by(email=session.get('email')).update({'balance': user_data.balance - 5})
+
+            db.session.commit()
+
+            user_data = User.query.filter_by(email=session.get('email')).first()
+
+            return render_template("slot.html", slot_id=slot_id, is_win=is_win, number=number, balance=user_data.balance)
+    else:
+        return redirect(url_for('login'))
 
 
 if __name__ == "__main__":
