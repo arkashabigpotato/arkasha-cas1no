@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title> Index </title>
+{% endblock %}
+
+{% block body %}
+    {% for slot in slots %}
+        <a href="{{ url_for('slot', slot_id=slot.id) }}"><button>Slot {{ slot.name }}</button></a>
+    {% endfor %}
+{% endblock %}

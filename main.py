@@ -132,7 +132,21 @@ def admin_slots():
     return 'admin slots'
 
 
+@app.route("/slots/")
+def slots():
+    slots = Slot.query.all()
+    return render_template("slots.html", slots=slots)
 
+
+@app.route("/slot/<slot_id>")
+def slot(slot_id):
+    new_slot = Slot(name="Asino 777", type=1)
+    try:
+        db.session.add(new_slot)
+        db.session.commit()
+        return 'ok'
+    except:
+        return "Error"
 
 
 if __name__ == "__main__":
