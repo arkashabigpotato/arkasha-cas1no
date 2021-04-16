@@ -133,6 +133,12 @@ def admin_slots():
     return 'admin slots'
 
 
+@app.route("/admin/games")
+def admin_games():
+    games = Game.query.all()
+    return render_template("admin_games.html", games=games)
+
+
 @app.route("/slots/")
 def slots():
     slots = Slot.query.all()
@@ -170,6 +176,15 @@ def slot(slot_id):
             db.session.commit()
 
             user_data = User.query.filter_by(email=session.get('email')).first()
+
+            this_slot = Slot.query.filter_by(id=int(slot_id)).first()
+
+            game = Game(slot=this_slot, bid=5, is_win=is_win, payoff=0, user=user_data)
+            try:
+                db.session.add(game)
+                db.session.commit()
+            except:
+                return "ERROR"
 
             return render_template("slot.html", slot_id=slot_id, is_win=is_win, number=number, balance=user_data.balance)
     else:

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title> Admin Games </title>
+{% endblock %}
+
+{% block body %}
+    <table class="table table-striped table-hover">
+        <tr class="table-primary">
+            <td>id</td>
+            <td>datetime</td>
+            <td>slot</td>
+            <td>bid</td>
+            <td>is_win</td>
+            <td>payoff</td>
+            <td>user</td>
+        </tr>
+
+        {% for game in games %}
+            <tr class="table-light">
+                <td>{{ game.id }}</td>
+                <td>{{ game.datetime }}</td>
+                <td>{{ game.slot }}</td>
+                <td>{{ game.bid }}</td>
+                <td>{{ game.is_win }}</td>
+                <td>{{ game.payoff }}</td>
+                <td>{{ game.user }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}
