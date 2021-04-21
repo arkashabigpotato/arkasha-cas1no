@@ -151,27 +151,29 @@ def slot(slot_id):
 
         user_data = User.query.filter_by(email=session.get('email')).first()
 
-
         if request.method == "GET":
-            return render_template("slot.html", slot_id=slot_id, is_win=None, number=None, balance=user_data.balance)
+            return render_template("slot.html", slot_id=slot_id, is_win=None, number=None,
+                                   balance=user_data.balance, bid=0)
         else:
-            data = request.form['data']
-            is_win = True
+            data = request.form['btn']
+            bid = int(request.form['bid'])
             number = random.randint(0, 100)
+            payoff = 0
 
-            if data == 'less' and number < 40:
-                is_win = True
-            elif data == 'less' and number > 40:
-                is_win = False
-            elif data == 'more' and number < 40:
-                is_win = False
-            else:
-                is_win = True
+            if data == 'less' and number < 50:
+                payoff = bid
+            elif data == 'less' and number > 50:
+                payoff = -bid
+            elif data == 'more' and number < 50:
+                payoff = -bid
+            elif data == 'more' and number > 50:
+                payoff = bid
+            elif data == '50' and number == 50:
+                payoff = 100 * bid
+            elif data == '50' and number != 50:
+                payoff = -bid
 
-            if is_win:
-                User.query.filter_by(email=session.get('email')).update({'balance': user_data.balance + 4})
-            else:
-                User.query.filter_by(email=session.get('email')).update({'balance': user_data.balance - 5})
+            User.query.filter_by(email=session.get('email')).update({'balance': user_data.balance + payoff})
 
             db.session.commit()
 
@@ -179,14 +181,15 @@ def slot(slot_id):
 
             this_slot = Slot.query.filter_by(id=int(slot_id)).first()
 
-            game = Game(slot=this_slot, bid=5, is_win=is_win, payoff=0, user=user_data)
+            game = Game(slot=this_slot, bid=5, is_win=(payoff > 0), payoff=0, user=user_data)
             try:
                 db.session.add(game)
                 db.session.commit()
             except:
                 return "ERROR"
 
-            return render_template("slot.html", slot_id=slot_id, is_win=is_win, number=number, balance=user_data.balance)
+            return render_template("slot.html", slot_id=slot_id, is_win=(payoff > 0), number=number,
+                                   balance=user_data.balance, bid=bid)
     else:
         return redirect(url_for('login'))
 

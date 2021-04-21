@@ -21,12 +21,16 @@
     {% endif %}
 
     <form method="post">
-        <input type="text" name="data" value="more" hidden>
-        <button class="btn btn-info" type="submit">More</button>
-    </form>
+    <div class="row">
+        <div class="col-3">
+            <input class="form-control" type="number" placeholder="Your bid"
+                   value="{% if bid  %}{{ bid }}{% else %} 5 {% endif %}" name="bid">
+        </div>
+    </div>
     <br>
-    <form method="post">
-        <input type="text" name="data" value="less" hidden>
-        <button class="btn btn-info" type="submit">Less</button>
+        <button class="btn btn-info" type="submit" value="more" name="btn">More</button>
+        <button class="btn btn-info" type="submit" value="less" name="btn">Less</button>
+        <button class="btn btn-info" type="submit" value="50" name="btn">50</button>
     </form>
+
 {% endblock %}
